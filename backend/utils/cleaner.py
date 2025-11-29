@@ -1,4 +1,13 @@
 import pandas as pd
 import numpy as np
 import matplotlib as pl
-python-multipart
+import multipart
+
+
+data = {
+    "names": ["Abdennour", "Ahmed", "Mohammed"],
+    "age": [21, 19, 26]
+}
+
+print(data["age"][2])
+
