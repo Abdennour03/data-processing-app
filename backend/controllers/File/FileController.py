@@ -58,3 +58,17 @@ async def get_pca_controller(filename: str, n_components: int):
     if n_components <= 0:
         return {"error": "Number of components must be greater than 0"}
     return result
+
+
+from backend.utils.DataCleaning import clean_and_cave_data
+
+async def get_cleaning_controller(filename: str):
+    if not filename.endswith(".csv"):
+        return {"errore": "Only CSV files can be cleaned currently"}
+
+    result = clean_and_cave_data(filename)
+    return {
+        "status": "success",
+        "message": f"File {filename} hase been cleaned and saved.",
+        "details": result
+    }

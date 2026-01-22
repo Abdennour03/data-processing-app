@@ -1,7 +1,5 @@
 import pandas as pd
-import numpy as np
-import matplotlib as pl
-import multipart
+import numpy as np 
 import os
 
 
@@ -12,21 +10,40 @@ def perform_eda(filename: str):
     # 2. Join it to reach the uploads folder
     file_path = os.path.join(base_dir, "uploads", filename)
     
-    # Debug print: This will show up in your terminal so you can see where it's looking
-    print(f"DEBUG: Looking for file at: {file_path}")
-
     if not os.path.exists(file_path):
         return {"error": f"File not found at {file_path}"}
 
     try:
-        df = pd.read_csv(file_path, sep=None, engine='python', decimal=',') 
-
-        return {
-            "columns": df.columns.tolist(),
-            "rows": len(df),
-            "summary": df.describe().fillna("").to_dict(),
-            "data_types": df.dtypes.astype(str).to_dict()
+        df = pd.read_csv(file_path, sep=None, engine='python', decimal=',')
+        eda_results = {
+            "info": {
+                "total_rows": len(df),
+                "total_columns": len(df.columns)
+            },
+            "columns_analysis": {}
         }
+        for col in df.columns:
+            column_data = {}
+            if df[col].dtype in ['int64', 'float64']:
+                column_data["type"] = "numeric"
+                column_data["stats"] = df[col].describe().to_dict()
+
+            else:
+                column_data["type"] = "categorical"
+                column_data["stats"] = df[col].nunique()
+                column_data["value_counts"] = df[col].value_counts().to_dict()
+
+            eda_results["columns_analysis"][col] = column_data
+        return eda_results
+
     except Exception as e:
         return {"error": str(e)}
+
+
+
+
+
+
+
+
 
