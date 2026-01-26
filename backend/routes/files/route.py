@@ -20,4 +20,4 @@ async def get_pca(filename: str, n: int =2):
 
 @router.get("/cleane/{filename}")   
 async def clean_data(filename: str):
-    return await get_cleaning_controller(filename)
+    return await get_cleaning_controller(filename)   

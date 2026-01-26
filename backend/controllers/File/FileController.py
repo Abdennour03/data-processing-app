@@ -1,10 +1,11 @@
 # Import Libraries to upload data with FastAPI
-from fastapi import APIRouter, UploadFile, File, HTTPException
+from fastapi import UploadFile, File, HTTPException
 import shutil
 import os
+from backend.config import UPLOAD_DIR
 
 async def upload_file_controller(file: UploadFile = File(...)):
-    LIMIT = 2 * 1024 * 1024
+    LIMIT = 30 * 1024 * 1024
     filename = os.path.basename(file.filename)
 
     if not filename.lower().endswith((".csv", ".xlsx", ".json")):
@@ -18,7 +19,7 @@ async def upload_file_controller(file: UploadFile = File(...)):
 
     upload_dir = os.path.join("..", "uploads")
     os.makedirs(upload_dir, exist_ok=True)
-    file_location = os.path.join(upload_dir, filename)
+    file_location = UPLOAD_DIR / filename
 
     try:
         with open(file_location, "wb") as buffer:
