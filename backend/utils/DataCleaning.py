@@ -1,10 +1,15 @@
 import pandas as pd
 import os
 import numpy as np
-from backend.config import PROCESSED_DATA_DIR, UPLOAD_DIR
+from backend.config import PROCESSED_DATA_DIR, UPLOAD_DIR, NORMAL_DATA_DIR, CLUSTRED_DATA_DIR
 
-def clean_and_cave_data(filename: str):
-    input_path = UPLOAD_DIR / filename
+def clean_and_cave_data(filename: str, places_folder: str = f"normal"):
+    
+    if places_folder == "clustering":
+        input_path = CLUSTRED_DATA_DIR / filename
+    else:
+        input_path = NORMAL_DATA_DIR / filename
+
     output_folder = PROCESSED_DATA_DIR
 
     if not output_folder.exists():
@@ -19,14 +24,18 @@ def clean_and_cave_data(filename: str):
         df = pd.read_csv(input_path, sep=None, engine="python", decimal=',')
         
         # 1. Missing Values
+        cols_to_drop = []
+        for col in df.columns:
+            if "id" in col.lower() or df[col].nunique() == len(df):
+                cols_to_drop.append(col)
+            
+        df.drop(columns=cols_to_drop, inplace=True, errors='ignore')
         for col in df.columns:
             if df[col].dtype in ['int64', 'float64']:
                 df[col] = df[col].fillna(df[col].mean())
             else:
-                # Add a check to ensure mode isn't empty
                 mode_val = df[col].mode()
                 df[col] = df[col].fillna(mode_val[0] if not mode_val.empty else "Missing")
-
         # 2. Outliers (IQR)
         # 
         numeric_cols = df.select_dtypes(include=["int64", "float64"]).columns
@@ -58,7 +67,10 @@ def clean_and_cave_data(filename: str):
         return {
             "status": "success", 
             "cleaned_file": f"cleaned_{filename}",
-            "row_after_outliers": len(df)
+            "row_after_outliers": len(df),
+            "removed_columns": cols_to_drop,
+            "message": f"Successfully removed {len(cols_to_drop)} non-informative columns (IDs/Constants).",
+            "path": str(output_path)
         }
     except Exception as e:
         return {"error": f"Cleaning Error: {str(e)}"}

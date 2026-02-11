@@ -9,8 +9,12 @@ UPLOAD_DIR = BASE_DIR / "backend" / "uploads"
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 
-RAW_DATA_DIR = BASE_DIR / "backend" / "storage"/ "raw"
+
+CLUSTRED_DATA_DIR = BASE_DIR / "backend" / "uploads"/ "clustring_upload"
+NORMAL_DATA_DIR = BASE_DIR / "backend" / "uploads"/ "normal_upload"
 PROCESSED_DATA_DIR = BASE_DIR /"backend" / "storage"/ "processed"
 
 # Create them immediately so they exist
+PROCESSED_DATA_DIR.mkdir(parents=True, exist_ok=True)
+CLUSTRED_DATA_DIR.mkdir(parents=True, exist_ok=True)
 PROCESSED_DATA_DIR.mkdir(parents=True, exist_ok=True)
