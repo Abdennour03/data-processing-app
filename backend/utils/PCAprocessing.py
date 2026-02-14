@@ -38,23 +38,44 @@ def perform_pca(filename: str, n_components: int = 2):
             cov_matrix = np.cov(X_std.T)
 
             # 5. Eigen-decomposition
-            eigen_values, eigen_vectors = np.linalg.eig(cov_matrix)
+            eigen_values, eigen_vectors = np.linalg.eigh(cov_matrix)
 
-            # 6. Sort and Project (using .real to handle complex numbers if they appear)
+            # 6. Sort and Project
             idx = np.argsort(eigen_values)[::-1]
-            eigen_values = eigen_values[idx].real
+            eigen_values = np.maximum(eigen_values[idx].real, 0)
             eigen_vectors = eigen_vectors[:, idx].real
+
+            total_variance = float(np.sum(eigen_values))
+            if total_variance == 0:
+                variance_ratios = np.zeros_like(eigen_values)
+            else:
+                variance_ratios = (eigen_values / total_variance) * 100.0
+
+            # Fix: Cap sum of variance ratios to 100% (due to rounding errors)
+            variance_ratios = np.clip(variance_ratios, 0, 100)
+            variance_ratios = variance_ratios[:len(eigen_values)]
+            # If sum > 100 due to rounding, normalize
+            total_reported = np.sum(variance_ratios)
+            if total_reported > 100.0:
+                variance_ratios = (variance_ratios / total_reported) * 100.0
 
             projection_matrix = eigen_vectors[:, :n_components]
             X_pca = np.dot(X_std, projection_matrix)
 
             pd.DataFrame(X_pca).to_csv(output_path, index=False)
+
+            explained_variance = [round(float(v), 2) for v in variance_ratios[:n_components].tolist()]
+            # Final fix: If sum of explained_variance > 100, normalize
+            total_exp = sum(explained_variance)
+            if total_exp > 100.0:
+                explained_variance = [round(v * 100.0 / total_exp, 2) for v in explained_variance]
+
             return {
-                        "status":  "pca has been success",
-                        "flie": str(output_path),
-                        "components": n_components,
-                        "explained_variance": eigen_values[:n_components].real.tolist(),
-                        "pca_results": X_pca.real.tolist()[:10]
-                    }
+                "status": "pca has been success",
+                "file": str(output_path),
+                "components": n_components,
+                "explained_variance": explained_variance,
+                "pca_results": X_pca.real.tolist()[:20000]
+            }
         except Exception as e:
             return {"error": f"Math Error: {str(e)}"}

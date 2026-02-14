@@ -1,6 +1,6 @@
 <!-- VS Code Copilot Custom Instructions -->
 
-# Data Processing Dashboard - Development Guide
+# The Abdennour Lab - Development Guide
 
 ## Project Overview
 This is a **React + TypeScript + Tailwind CSS** dashboard for data processing and analysis, paired with a FastAPI Python backend.

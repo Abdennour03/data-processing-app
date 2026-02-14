@@ -1,6 +1,6 @@
 # Import Libraries to upload data with FastAPI
 from fastapi import APIRouter, UploadFile, File, Form
-from backend.controllers.File import upload_file_controller, get_eda_controller, get_pca_controller, get_cleaning_controller
+from backend.controllers.File import upload_file_controller, get_eda_controller, get_pca_controller, get_cleaning_controller, download_file_controller, get_custom_plot_logic
 from backend.config import NORMAL_DATA_DIR, CLUSTRED_DATA_DIR
 
 router = APIRouter()
@@ -21,4 +21,12 @@ async def get_pca(filename: str, n: int =2):
 
 @router.get("/cleane/{filename}")   
 async def clean_data(filename: str):
-    return await get_cleaning_controller(filename)   
+    return await get_cleaning_controller(filename)
+
+@router.get("/download/{filename}")
+async def download_data(filename: str):
+    return await download_file_controller(filename)
+
+@router.get("/custom_plot")
+async def custom_plot(filename: str, x: str, y: str, folder: str):
+    return await get_custom_plot_logic(filename, x, y, folder)

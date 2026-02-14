@@ -1,6 +1,6 @@
 # Data Processing Application
 
-A data processing dashboard with FastAPI backend for data analysis operations including EDA (Exploratory Data Analysis), PCA (Principal Component Analysis), and data cleaning.
+A data processing dashboard (The Abdennour Lab) with FastAPI backend for data analysis operations including EDA (Exploratory Data Analysis), PCA (Principal Component Analysis), and data cleaning.
 
 ---
 
